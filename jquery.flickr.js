@@ -22,7 +22,7 @@
     // (constructs extra params as they come in)
     url: function(method, params) {
       return 'http://api.flickr.com/services/rest/?method=' + method + '&format=json' +
-        '&api_key=' + $.flickr.settings.api_key + ($.isEmpty(params) ? '' : '&' + $.param(params)) + '&jsoncallback=?'
+        '&api_key=' + $.flickr.settings.api_key + ($.isEmpty(params) ? '' : '&' + $.param(params)) + ((typeof onComplete == 'function') ? '&jsoncallback=onComplete' : '&jsoncallback=?');
     },
     // translate plugin image sizes to flickr sizes
     translate: function(size) {
@@ -115,7 +115,8 @@
     // base configuration
     $.flickr.settings = $.extend({
       api_key: 'YOUR API KEY',
-      thumbnail_size: 'sq'
+      thumbnail_size: 'sq',
+      onComplete: false
     }, options || {})
     
     return $.flickr.methods
