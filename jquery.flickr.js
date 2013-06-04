@@ -46,7 +46,7 @@
     src: function(photo, size) {
       if (size === undefined) size = $.flickr.translate($.flickr.settings.thumbnail_size)
       return 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + 
-        '/' + photo.id + '_' + photo.secret + size + '.jpg'
+        '/' + (photo.primary !== undefined ? photo.primary : photo.id) + '_' + photo.secret + size + '.jpg'
     },
     imageTag: function(image) {
       return '<img src="' + image.src + '" alt="' + image.alt + '" />'
@@ -56,20 +56,22 @@
   // accepts a series of photos and constructs
   // the thumbnails that link back to Flickr
   $.flickr.thumbnail.process = function(photos) {
-    var thumbnails = $.map(photos.photo, function(photo) {
-      var image = new Image(), html = '', href = undefined
+      var thumbnails = $.map((photos.photo === undefined ? photos.photoset : photos.photo), function(photo) {
+        console.log(photo);
+        var image = new Image(), html = '', href = undefined
 
-      image.src = $.flickr.thumbnail.src(photo)
-      image.alt = photo.title
+        image.src = $.flickr.thumbnail.src(photo)
+        image.alt = photo.title
 
-      var size = $.flickr.settings.link_to_size
-      if (size != undefined && size.match(/sq|t|s|m|o/)) 
-        href = $.flickr.thumbnail.src(photo, $.flickr.translate(size))
-      
-      html = $.flickr.linkTag($.flickr.thumbnail.imageTag(image), photo, href)
+        var size = $.flickr.settings.link_to_size
+        if (size != undefined && size.match(/sq|t|s|m|o/)) 
+          href = $.flickr.thumbnail.src(photo, $.flickr.translate(size))
         
-      return ['<li>' + html + '</li>']
-    }).join("\n")
+        html = $.flickr.linkTag($.flickr.thumbnail.imageTag(image), photo, href)
+          
+        return ['<li>' + html + '</li>']
+      }).join("\n")
+    
     
     return $('<ul class="flickr"></ul>').append(thumbnails)
   }
@@ -81,8 +83,16 @@
     
     return elements.each(function() {
       $.getJSON($.flickr.url(method, options), function(data) {
-        photos = (data.photos === undefined ? data.photoset : data.photos)
-        elements.append($.flickr.thumbnail.process(photos))
+        if (data.photos !== undefined) {
+          elements.append($.flickr.thumbnail.process(data.photos));
+        }
+        else if (data.photoset !== undefined) {
+          elements.append($.flickr.thumbnail.process(data.photoset));
+        }
+        else if (data.photosets !== undefined) {
+          elements.append($.flickr.thumbnail.process(data.photosets));
+        }
+        
       })
     })
   }
@@ -101,6 +111,10 @@
     // http://www.flickr.com/services/api/flickr.photos.search.html
     photosSearch: function(options) {
       $.flickr.photos('flickr.photos.search', options)
+    },
+    // http://www.flickr.com/services/api/flickr.photosets.getList.html
+    photosetsGetList: function(options) {
+      $.flickr.photos('flickr.photosets.getList', options)
     },
     // http://www.flickr.com/services/api/flickr.photosets.getPhotos.html
     photosetsGetPhotos: function(options) {
