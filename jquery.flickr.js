@@ -37,7 +37,7 @@
     // determines what to do with the links
     linkTag: function(text, photo, href) {
       if (href === undefined) href = ['http://www.flickr.com/photos', photo.owner, photo.id].join('/')      
-      return '<a href="' + href + '" title="' + photo.title + '">' + text + '</a>'
+      return '<a href="' + href + '" title="' + (photo.title._content === undefined ? photo.title : photo.title._content) + '">' + text + '</a>'
     }
   }
   
@@ -61,7 +61,7 @@
         var image = new Image(), html = '', href = undefined
 
         image.src = $.flickr.thumbnail.src(photo)
-        image.alt = photo.title
+        image.alt = (photo.title._content === undefined ? photo.title : photo.title._content) 
 
         var size = $.flickr.settings.link_to_size
         if (size != undefined && size.match(/sq|t|s|m|o/)) 
