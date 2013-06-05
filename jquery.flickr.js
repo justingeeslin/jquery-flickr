@@ -36,7 +36,7 @@
     },
     // determines what to do with the links
     linkTag: function(text, photo, href) {
-      if (href === undefined) href = ['http://www.flickr.com/photos', photo.owner, photo.id].join('/')      
+      if (href === undefined) href = ['http://www.flickr.com/photos', photo.owner, (photo.primary !== undefined ? photo.primary : photo.id)].join('/')      
       return '<a href="' + href + '" title="' + (photo.title._content === undefined ? photo.title : photo.title._content) + '">' + text + '</a>'
     }
   }
