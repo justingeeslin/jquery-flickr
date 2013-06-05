@@ -36,7 +36,7 @@
     },
     // determines what to do with the links
     linkTag: function(text, photo, href) {
-      if (href === undefined) href = ['http://www.flickr.com/photos', photo.owner, (photo.primary !== undefined ? photo.primary : photo.id)].join('/')      
+      if (href === undefined) href = ['http://www.flickr.com/photos', (photo.owner === undefined ? $.flickr.settings.user_id : photo.owner), (photo.primary !== undefined ? photo.primary : photo.id)].join('/')      
       if (photo.primary === undefined) {
         //Photo
         data = 'data-photo-id="' + photo.id + '" ';
@@ -45,6 +45,10 @@
         //Photoset
         data = 'data-photo-id="' + photo.primary + '" data-photoset-id="' + photo.id + '"';
       }
+
+      var size = $.flickr.settings.link_to_size
+      if (size != undefined && size.match(/sq|t|s|m|o/)) 
+        data += 'data-photo-href="' + $.flickr.thumbnail.src(photo, $.flickr.translate(size)) + '" '
 
       return '<a href="' + href + '" title="' + (photo.title._content === undefined ? photo.title : photo.title._content) + '" ' + data + '>' + text + '</a>'
     }
@@ -71,10 +75,6 @@
 
         image.src = $.flickr.thumbnail.src(photo)
         image.alt = (photo.title._content === undefined ? photo.title : photo.title._content) 
-
-        var size = $.flickr.settings.link_to_size
-        if (size != undefined && size.match(/sq|t|s|m|o/)) 
-          href = $.flickr.thumbnail.src(photo, $.flickr.translate(size))
         
         html = $.flickr.linkTag($.flickr.thumbnail.imageTag(image), photo, href)
           
