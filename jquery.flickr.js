@@ -27,8 +27,8 @@
         if (typeof p[prop] == 'function')
           p[prop] = undefined;
       }
-      return 'http://api.flickr.com/services/rest/?method=' + method + '&format=json' +
-        '&api_key=' + $.flickr.settings.api_key + ($.isEmpty(p) ? '' : '&' + $.param(p)) + '&nojsoncallback=1';
+      p.api_key = (p.api_key !== undefined ? p.api_key : $.flickr.settings.api_key)
+      return 'http://api.flickr.com/services/rest/?method=' + method + '&format=json' + ($.isEmpty(p) ? '' : '&' + $.param(p)) + '&nojsoncallback=1';
     },
     // translate plugin image sizes to flickr sizes
     translate: function(size) {
@@ -149,6 +149,7 @@
     $.flickr.settings = $.extend({
       api_key: 'YOUR API KEY',
       thumbnail_size: 'sq',
+      page: 1,
       onComplete: false
     }, options || {})
     
