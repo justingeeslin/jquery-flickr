@@ -21,8 +21,14 @@
     // the actual request url
     // (constructs extra params as they come in)
     url: function(method, params) {
+      //Remove event handlers / functions from params
+      var p = $.extend(true, {}, params);
+      for(prop in p) {
+        if (typeof p[prop] == 'function')
+          p[prop] = undefined;
+      }
       return 'http://api.flickr.com/services/rest/?method=' + method + '&format=json' +
-        '&api_key=' + $.flickr.settings.api_key + ($.isEmpty(params) ? '' : '&' + $.param(params)) + ((typeof onComplete == 'function') ? '&jsoncallback=onComplete' : '&jsoncallback=?');
+        '&api_key=' + $.flickr.settings.api_key + ($.isEmpty(p) ? '' : '&' + $.param(p)) + '&nojsoncallback=1';
     },
     // translate plugin image sizes to flickr sizes
     translate: function(size) {
@@ -70,7 +76,6 @@
   // the thumbnails that link back to Flickr
   $.flickr.thumbnail.process = function(photos) {
       var thumbnails = $.map((photos.photo === undefined ? photos.photoset : photos.photo), function(photo) {
-        console.log(photo);
         var image = new Image(), html = '', href = undefined
 
         image.src = $.flickr.thumbnail.src(photo)
@@ -89,7 +94,7 @@
   $.flickr.photos = function(method, options) {
     var options = $.extend($.flickr.settings, options || {}),
         elements = $.flickr.self, photos
-    
+
     return elements.each(function() {
       $.getJSON($.flickr.url(method, options), function(data) {
         if (data.photos !== undefined) {
@@ -100,6 +105,11 @@
         }
         else if (data.photosets !== undefined) {
           elements.append($.flickr.thumbnail.process(data.photosets));
+        }
+        
+        //Callback
+        if (typeof $.flickr.settings.onComplete == 'function') {
+          $.flickr.settings.onComplete(); 
         }
         
       })
