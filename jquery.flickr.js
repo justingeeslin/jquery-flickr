@@ -34,9 +34,15 @@
     translate: function(size) {
       switch(size) {
         case 'sq': return '_s' // square
+        case 'lsq': return '_q' // large square
         case 't' : return '_t' // thumbnail
         case 's' : return '_m' // small
+        case 's320' : return '_n' // small 320
         case 'm' : return ''   // medium
+        case 'm640' : return '_z'   // medium 640
+        case 'm800' : return '_c'   // medium 800
+        case 'l' : return '_b'   // large
+        case 'o' : return '_o'   // original
         default  : return ''   // medium
       }
     },
