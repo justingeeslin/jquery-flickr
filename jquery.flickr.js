@@ -3,6 +3,7 @@
  * version: 1.0 (02/23/2009)
  * written for jQuery 1.3.2
  * by Ryan Heath (http://rpheath.com)
+ * modified by Justin Geeslin (@justingeeslin)
  *****************************************/
 (function($) {
   // core extensions
